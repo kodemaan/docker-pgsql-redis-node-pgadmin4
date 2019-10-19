@@ -1,0 +1,33 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:12
+    environment:
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./initialize.sql:/docker-entrypoint-initdb.d/initialize.sql
+    ports:
+      - 5432:5432
+  pgadmin4:
+    image: dpage/pgadmin4:4.14
+    ports:
+      - 8080:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: kodemaan@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_LISTEN_ADDRESS: 0.0.0.0
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
+  web:
+    build: .
+    ports:
+      - 3000:3000
+    environment:
+      PGUSER: postgres
+      PGHOST: postgres
+      PGPASSWORD: password
+      PGDATABASE: my_db
+  redis:
+    image: redis:5-alpine
+    ports:
+      - 6379:6379
